@@ -1,1 +1,1 @@
-//Логіка сторінки Cart
+import './js/theme/theme-logic.js';

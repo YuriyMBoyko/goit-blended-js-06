@@ -1,1 +1,1 @@
-//Логіка сторінки Wishlist
+import './js/theme/theme-logic.js';
