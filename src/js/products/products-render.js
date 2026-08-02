@@ -1,6 +1,11 @@
+import refs from './products-refs.js';
 //import { itemCategoryHtmlTemplate, itemProductHtmlTemplate } from './products-consts.js';
 
-export function createCategoriesMarkup(categories) {
+export function renderCategories(categories) {
+  refs.categoriesList.innerHTML = createCategoriesMarkup(categories);
+}
+
+function createCategoriesMarkup(categories) {
   return !categories ? '' :
     (Array.isArray(categories) ?
       categories.map((category, index) => {
@@ -8,10 +13,25 @@ export function createCategoriesMarkup(categories) {
           <li class="categories__item">
             <button class="categories__btn" type="button" data-category-name="${category}">${category}</button>
           </li>`;
-      }).join('') : '');
+      }).join('') : '').trim();
 }
 
-export function createProductsMarkup(products) {
+export function clearProducts() {
+  refs.productsList.innerHTML = '';
+}
+
+export function renderProducts(products, append = false) {
+  const markup = (Array.isArray(products) && (products.length === 0)) ? '' : createProductsMarkup(products);
+  if (append) {
+    if (markup !== '') {
+      refs.productsList.insertAdjacentHTML('beforeend', markup);
+    }
+  } else {
+    refs.productsList.innerHTML = markup;
+  }
+}
+
+function createProductsMarkup(products) {
   return !products ? '' :
     (Array.isArray(products) ? 
       products.map((product, index) => {
@@ -23,7 +43,7 @@ export function createProductsMarkup(products) {
             <p class="products__category">Category: ${product.category}</p>
             <p class="products__price">Price: $${product.price}</p>
           </li>`;
-      }).join('') : '');
+      }).join('') : '').trim();
 }
 
 export function createProductModalMarkup(product) {

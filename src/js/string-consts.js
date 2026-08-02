@@ -9,3 +9,5 @@ export const infoNoProductsFound = 'There are no products found';
 export const infoEndOfProductsList = 'You have reached the end of Products list';
 
 export const infoNoProductInfo = 'Sorry, but info about this product is unavailable';
+
+export const errorFillSearchValue = 'Please, fill Search field';

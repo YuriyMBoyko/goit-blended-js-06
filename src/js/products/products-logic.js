@@ -1,19 +1,20 @@
 import refs from './products-refs.js';
-import { fetchCategories, fetchProducts, productsPerPage } from './products-api.js';
-import { createCategoriesMarkup, createProductsMarkup } from './products-render.js';
-import { showError, showInfo, sleep/*, showScrollTopBtn, hideScrollTopBtn*/ } from '../helpers.js';
+import { allCategoryName } from './products-consts.js';
+import { fetchCategories, fetchProductsByCategory, fetchProductsByQuery, productsPerPage } from './products-api.js';
+import { clearProducts, renderCategories, renderProducts } from './products-render.js';
+import { showError, showInfo, sleep } from '../helpers.js';
 import { errorLoadingCategories, errorLoadingProducts, errorChangingCategory, infoNoProductsFound, infoEndOfProductsList, infoNoProductInfo } from '../string-consts.js';
 import { openProductModal } from '../modal.js';
 
 let currentCategory = '';
 let currentPage = 1;
+let currentQuery;
 let isLoading = false;
+let clickedCategoryName = '';
 
 document.addEventListener('DOMContentLoaded', initCategories);
 refs.categoriesList.addEventListener('click', handleCategoryClick);
 refs.loadMoreBtn.addEventListener('click', handleLoadMoreBtnClick);
-
-let lastCategoryName;
 
 function initProductModal() {
   if (!refs.productsList) return;
@@ -38,13 +39,15 @@ async function initCategories() {
   showLoader();
   try {
     await sleep(1000);
-    const productCategories = await fetchCategories();
-    refs.categoriesList.innerHTML = createCategoriesMarkup(productCategories);
+    var categories = await fetchCategories();
+    categories = [allCategoryName, ...categories];
+    renderCategories(categories);
 
     const firstBtn = refs.categoriesList.querySelector(`.${categoriesBtnClass}`);
     if (firstBtn) firstBtn.classList.add(categoriesBtnIsActiveClass);
 
-    await renderProducts(firstBtn?.dataset.categoryName || '', 1);
+    clickedCategoryName = firstBtn?.dataset.categoryName;
+    await getProductsByCategory(clickedCategoryName || '', 1);
 
     initProductModal();
   } catch (error) {
@@ -58,83 +61,50 @@ async function initCategories() {
 }
 
 async function handleCategoryClick(event) {
-  const clickedBtn = event.target;  
-  if ((!clickedBtn) || (!clickedBtn.classList.contains(`${categoriesBtnClass}`)) || clickedBtn.classList.contains(categoriesBtnIsActiveClass)) return;
+  const clicked = event.target;  
+  if ((!clicked) || (!clicked.classList.contains(`${categoriesBtnClass}`)) || clicked.classList.contains(categoriesBtnIsActiveClass)) return;
 
   document.querySelector(`.${categoriesBtnClass}.${categoriesBtnIsActiveClass}`)?.classList.remove(categoriesBtnIsActiveClass);
 
-  clickedBtn.classList.add(categoriesBtnIsActiveClass);
+  clicked.classList.add(categoriesBtnIsActiveClass);
   setTimeout(() => {
-    lastCategoryName = clickedBtn.dataset.categoryName;
-    console.log(`${lastCategoryName}: selected`);
-    renderProducts(lastCategoryName || '');
+    clickedCategoryName = clicked.dataset.categoryName;
+    getProductsByCategory(clickedCategoryName || '');
   }, 10);
 }
 
-async function renderProducts(category = '', page = 1) {
+async function getProductsByCategory(category = '', page = 1) {
   if (isLoading) {
-    if (lastCategoryName.toUpperCase() !== category.toUpperCase()) return;
+    if (clickedCategoryName.toLowerCase() !== category.toLowerCase()) return;
     
-    setTimeout(() => {renderProducts(category)}, 100);
+    setTimeout(() => {getProductsByCategory(category, page)}, 100);
   } else {
-    console.log(`${category}: renderProducts executing`);
-
     isLoading = true;
     showLoader();
     try {
+      currentQuery = '';
 //      hideLoadMoreBtn();
       hideNotFound();
+      renderProducts([], (page !== 1));
+/*
       if (page === 1) {
-        refs.productsList.innerHTML = '';
+        clearProducts();
       }
+*/
       await sleep(1000);
 
-      currentCategory = (category.toUpperCase() === 'beauty'.toUpperCase()) ? category + 123 : category;
-//      currentCategory = category;
-      currentPage = page;
+      currentCategory = category;
 
-      const products = await fetchProducts(currentCategory, currentPage);
+      const products = await fetchProductsByCategory(currentCategory, page);
 
-      const items = products?.products || [];
-      const totalItems = products?.total || 0;
-      const limit = products?.limit || productsPerPage;
-      const totalPages = Math.ceil(totalItems / productsPerPage);
+      if (clickedCategoryName.toLowerCase() !== currentCategory.toLowerCase()) return;
 
-      if ((page === 1) && (items.length === 0)) {
-        refs.productsList.innerHTML = '';
-        hideLoadMoreBtn();
-        showNotFound();
-        showInfo(infoNoProductsFound);
-        return;
-      }
-
-      let newProducts;
-
-      if (page === 1) {
-        refs.productsList.innerHTML = createProductsMarkup(items);
-        newProducts = refs.productsList.querySelector('.products__item');
-      } else {
-        const currentCount = refs.productsList.children.length;
-        refs.productsList.insertAdjacentHTML('beforeend', createProductsMarkup(items));
-        const allProducts = refs.productsList.querySelectorAll('.products__item');
-        newProducts = Array.from(allProducts).slice(currentCount);
-      }
-
-      if ((page >= totalPages) || (items.length < productsPerPage)) {
-        hideLoadMoreBtn();
-
-        if (page > 1) {
-          showInfo(infoEndOfProductsList);
-        }
-      } else {
-        showLoadMoreBtn();
-      }
-
+      handleProducts(products, page);
     } catch (error) {
       console.error(error);
 
-      if (currentPage === 1) {
-        refs.productsList.innerHTML = '';
+      if (page === 1) {
+        clearProducts();
       }
 
       hideLoadMoreBtn();
@@ -142,18 +112,110 @@ async function renderProducts(category = '', page = 1) {
     } finally {
       isLoading = false;
       hideLoader();
-      console.log(`${category}: renderProducts finished`);
     }
   }
 }
 
+export async function getProductsByQuery(query = '', page = 1) {
+  if (!query) {
+    currentQuery = '';
+    clickedCategoryName = currentCategory;
+    document.querySelector(`.${categoriesBtnClass}[data-category-name="${currentCategory}"]`)?.classList.add(categoriesBtnIsActiveClass);
+    getProductsByCategory(currentCategory, 1);
+    return;
+  }
+
+  if (isLoading) {
+    return;
+  } else {
+    isLoading = true;
+    showLoader();
+    try {
+//      hideLoadMoreBtn();
+      hideNotFound();
+      document.querySelector(`.${categoriesBtnClass}.${categoriesBtnIsActiveClass}`)?.classList.remove(categoriesBtnIsActiveClass);
+      renderProducts([], (page !== 1));
+/*
+      if (page === 1) {
+        clearProducts());
+      }
+*/
+      await sleep(1000);
+
+      currentQuery = query;
+
+      const products = await fetchProductsByQuery(query, page);
+
+//      if (clickedCategoryName.toLowerCase() !== currentCategory.toLowerCase()) return;
+
+      handleProducts(products, page);
+    } catch (error) {
+      console.error(error);
+
+      if (page === 1) {
+        clearProducts();
+      }
+
+      hideLoadMoreBtn();
+      showError(errorLoadingProducts + '<br><br>' + error, true);
+    } finally {
+      isLoading = false;
+      hideLoader();
+    }
+  }
+}
+
+function handleProducts(products, page) {
+  const items = products?.products || [];
+  const totalItems = products?.total || 0;
+  const limit = products?.limit || productsPerPage;
+  const totalPages = Math.ceil(totalItems / productsPerPage);
+
+  currentPage = page;
+  if ((page === 1) && (items.length === 0)) {
+    hideLoadMoreBtn();
+//    clearProducts();
+    showNotFound();
+    showInfo(infoNoProductsFound);
+    return;
+  }
+
+  renderProducts(items, (page !== 1));
+
+  let newProducts;
+  if (page === 1) {
+    newProducts = refs.productsList.querySelectorAll('.products__item');
+  } else {
+    const currentCount = refs.productsList.children.length;
+    const allProducts = refs.productsList.querySelectorAll('.products__item');
+    newProducts = Array.from(allProducts).slice(currentCount);
+  }
+
+  if ((page >= totalPages) || (items.length < productsPerPage)) {
+    hideLoadMoreBtn();
+
+    if (page > 1) {
+      showInfo(infoEndOfProductsList);
+    }
+  } else {
+    showLoadMoreBtn();
+  }
+}
+
 async function handleLoadMoreBtnClick(event) {
-  currentPage += 1;
   try {
-    await renderProducts(currentCategory, currentPage);
+    if (currentQuery) {
+      await getProductsByQuery(currentQuery, currentPage + 1);
+    } else {
+      await getProductsByCategory(currentCategory, currentPage + 1);
+    }
   } catch {
     showError(errorLoadingProducts);
   }
+}
+
+export async function getProductsList() {
+
 }
 
 const isVisibleClass = 'is-visible';
