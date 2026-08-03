@@ -3,7 +3,8 @@ import { allCategoryName } from './products-consts.js';
 import { fetchCategories, fetchProductsByCategory, fetchProductsByQuery, productsPerPage } from './products-api.js';
 import { clearProducts, renderCategories, renderProducts } from './products-render.js';
 import { showError, showInfo, sleep } from '../helpers.js';
-import { errorLoadingCategories, errorLoadingProducts, errorChangingCategory, infoNoProductsFound, infoEndOfProductsList, infoNoProductInfo } from '../string-consts.js';
+import { MESSAGES } from '../string-consts.js';
+//import { ERROR_LOADING_CATEGOREIS, ERROR_LOADING_PRODUCTS, ERROR_CHANGING_CATEGORY, INFO_NO_PRODUCTS_FOUND, INFO_END_OF_PRODUCTS_LIST, INFO_NO_PRODUCT_INFO } from '../string-consts.js';
 import { openProductModal } from '../modal.js';
 
 let currentCategory = '';
@@ -24,7 +25,7 @@ function initProductModal() {
     if (clicked) {
       const productId = clicked.dataset.id;
       if (!productId) {
-        showInfo(infoNoProductInfo);
+        showInfo(MESSAGES.INFO_NO_PRODUCT_INFO);
         return;
       }
       openProductModal(productId);
@@ -53,7 +54,7 @@ async function initCategories() {
   } catch (error) {
     console.log(error);
     
-    showError(errorLoadingCategories + '<br><br>' + error);
+    showError(MESSAGES.ERROR_LOADING_CATEGOREIS + '<br><br>' + error);
   } finally {
     hideLoader();
 //    hideLoadMoreBtn();
@@ -108,7 +109,7 @@ async function getProductsByCategory(category = '', page = 1) {
       }
 
       hideLoadMoreBtn();
-      showError(errorLoadingProducts + '<br><br>' + error, true);
+      showError(MESSAGES.ERROR_LOADING_PRODUCTS + '<br><br>' + error, true);
     } finally {
       isLoading = false;
       hideLoader();
@@ -157,7 +158,7 @@ export async function getProductsByQuery(query = '', page = 1) {
       }
 
       hideLoadMoreBtn();
-      showError(errorLoadingProducts + '<br><br>' + error, true);
+      showError(MESSAGES.ERROR_LOADING_PRODUCTS + '<br><br>' + error, true);
     } finally {
       isLoading = false;
       hideLoader();
@@ -176,7 +177,7 @@ function handleProducts(products, page) {
     hideLoadMoreBtn();
 //    clearProducts();
     showNotFound();
-    showInfo(infoNoProductsFound);
+    showInfo(MESSAGES.INFO_NO_PRODUCTS_FOUND);
     return;
   }
 
@@ -195,7 +196,7 @@ function handleProducts(products, page) {
     hideLoadMoreBtn();
 
     if (page > 1) {
-      showInfo(infoEndOfProductsList);
+      showInfo(MESSAGES.INFO_END_OF_PRODUCTS_LIST);
     }
   } else {
     showLoadMoreBtn();
@@ -210,7 +211,7 @@ async function handleLoadMoreBtnClick(event) {
       await getProductsByCategory(currentCategory, currentPage + 1);
     }
   } catch {
-    showError(errorLoadingProducts);
+    showError(MESSAGES.ERROR_LOADING_PRODUCTS);
   }
 }
 

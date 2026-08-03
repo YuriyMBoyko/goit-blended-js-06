@@ -1,7 +1,7 @@
 import refs from './refs.js';
 import { getProductsByQuery } from './products/products-logic.js';
 import { showInfo, showError } from './helpers.js';
-import { errorFillSearchValue } from './string-consts.js';
+import { MESSAGES } from './string-consts.js';
 
 refs.searchForm?.addEventListener('submit', searchFormOnSubmit);
 refs.clearSearchBtn?.addEventListener('click', clearSearchBtnOnClick);
@@ -12,7 +12,7 @@ function searchFormOnSubmit(event) {
   const query = event.currentTarget.elements.searchValue.value.trim();
 
   if (!query) {
-    showError(errorFillSearchValue);
+    showError(MESSAGES.ERROR_FILL_SEARCH_VALUE);
     return;
   }
 
