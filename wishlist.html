@@ -16,12 +16,12 @@
   document.documentElement.setAttribute('data-theme', initialTheme);
 })();</script>
     <script type="module" crossorigin src="/goit-blended-js-06/assets/vendor-4yCzdkXl.js"></script>
-    <script type="module" crossorigin src="/goit-blended-js-06/assets/handlers-Nax2d--s.js"></script>
+    <script type="module" crossorigin src="/goit-blended-js-06/assets/handlers-BstTvLzd.js"></script>
+    <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/handlers-D1GiaRW_.css">
     <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/vendor-DnveWo0P.css">
-    <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/handlers-CUDk91BK.css">
   </head>
   <body>
-    <header class="header">
+    <header class="header sticky-header">
   <div class="container header__container">
     <a class="logo" href="./index.html" aria-label="Site logo">
       <svg class="logo__icon" width="100" height="30">
@@ -74,8 +74,10 @@
 
     <main>
       <section class="section">
-        <div class="container">
+        <div class="container wishlist-container">
           <ul class="products"></ul>
+          <span class="loader"></span>
+          <button class="load-more-btn is-hidden">Load More</button>
           <div class="not-found">
             <div class="not-found__icon">
               <svg
