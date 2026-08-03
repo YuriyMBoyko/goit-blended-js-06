@@ -7,7 +7,7 @@ const CATEGORY_LIST_PATH = '/category-list';
 const CATEGORY_PATH = '/category';
 const SEARCH_PATH = '/search';
 
-export const productsPerPage = 12;
+export const PRODUCTS_PER_PAGE = 12;
 
 function prepareUrl(baseUrl, arrayPath) {
   return (baseUrl?? '') + (!arrayPath ? '' : (Array.isArray(arrayPath) ? arrayPath.join('') : arrayPath));
@@ -25,7 +25,7 @@ export async function fetchCategories() {
 
 export async function fetchProductsByCategory(category = '', page = 1) {
   const categoryName = (category.trim().toLowerCase() === allCategoryName.toLowerCase()) ? '' : category.trim();
-  const params = { limit: productsPerPage, skip: (page - 1) * productsPerPage };
+  const params = { limit: PRODUCTS_PER_PAGE, skip: (page - 1) * PRODUCTS_PER_PAGE };
   let url = prepareUrl(BASE_URL, [PRODUCTS_PATH]);
   if (categoryName !== '') url += CATEGORY_PATH + '/' + categoryName;
 
@@ -34,17 +34,15 @@ export async function fetchProductsByCategory(category = '', page = 1) {
 }
 
 export async function fetchProductsByQuery(query = '', page = 1) {
-  const params = { q: query, limit: productsPerPage, skip: (page - 1) * productsPerPage };
+  const params = { q: query, limit: PRODUCTS_PER_PAGE, skip: (page - 1) * PRODUCTS_PER_PAGE };
   let url = prepareUrl(BASE_URL, [PRODUCTS_PATH, SEARCH_PATH]);
 
-  console.log(query);
   const response = await axios.get(url, { params });
-  console.log(response.data);
   return response.data;
 }
 
 export async function fetchProductById(id) {
-  const url = prepareUrl(BASE_URL, [PRODUCTS_PATH, `/${id.trim()}`]);
+  const url = prepareUrl(BASE_URL, [PRODUCTS_PATH, `/${String(id).trim()}`]);
   const response = await axios.get(url);
   return response.data;
 }

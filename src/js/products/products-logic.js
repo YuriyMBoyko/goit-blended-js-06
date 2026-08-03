@@ -1,11 +1,12 @@
 import refs from './products-refs.js';
 import { allCategoryName } from './products-consts.js';
-import { fetchCategories, fetchProductsByCategory, fetchProductsByQuery, productsPerPage } from './products-api.js';
+import { fetchCategories, fetchProductsByCategory, fetchProductsByQuery, PRODUCTS_PER_PAGE } from './products-api.js';
 import { clearProducts, renderCategories, renderProducts } from './products-render.js';
-import { showError, showInfo, sleep } from '../helpers.js';
+import { showLoader, hideLoader, showLoadMoreBtn, hideLoadMoreBtn, showNotFound, hideNotFound, showError, showInfo, sleep } from '../helpers.js';
+import { CSS_CLASSES } from '../constants.js';
 import { MESSAGES } from '../string-consts.js';
 //import { ERROR_LOADING_CATEGOREIS, ERROR_LOADING_PRODUCTS, ERROR_CHANGING_CATEGORY, INFO_NO_PRODUCTS_FOUND, INFO_END_OF_PRODUCTS_LIST, INFO_NO_PRODUCT_INFO } from '../string-consts.js';
-import { openProductModal } from '../modal.js';
+import { initProductModal } from '../modal.js';
 
 let currentCategory = '';
 let currentPage = 1;
@@ -17,27 +18,11 @@ document.addEventListener('DOMContentLoaded', initCategories);
 refs.categoriesList.addEventListener('click', handleCategoryClick);
 refs.loadMoreBtn.addEventListener('click', handleLoadMoreBtnClick);
 
-function initProductModal() {
-  if (!refs.productsList) return;
-
-  refs.productsList.addEventListener('click', event => {
-    const clicked = event.target.closest('.products__item');
-    if (clicked) {
-      const productId = clicked.dataset.id;
-      if (!productId) {
-        showInfo(MESSAGES.INFO_NO_PRODUCT_INFO);
-        return;
-      }
-      openProductModal(productId);
-    }
-  });
-}
-
 const categoriesBtnClass = 'categories__btn';
 const categoriesBtnIsActiveClass = 'categories__btn--active';
 
 async function initCategories() {
-  showLoader();
+  showLoader(refs.loader);
   try {
     await sleep(1000);
     var categories = await fetchCategories();
@@ -50,14 +35,14 @@ async function initCategories() {
     clickedCategoryName = firstBtn?.dataset.categoryName;
     await getProductsByCategory(clickedCategoryName || '', 1);
 
-    initProductModal();
+    initProductModal(refs.productsList);
   } catch (error) {
     console.log(error);
     
     showError(MESSAGES.ERROR_LOADING_CATEGOREIS + '<br><br>' + error);
   } finally {
-    hideLoader();
-//    hideLoadMoreBtn();
+    hideLoader(refs.loader);
+//    hideLoadMoreBtn(refs.loadMoreBtn);
   }
 }
 
@@ -81,12 +66,13 @@ async function getProductsByCategory(category = '', page = 1) {
     setTimeout(() => {getProductsByCategory(category, page)}, 100);
   } else {
     isLoading = true;
-    showLoader();
+    hideLoadMoreBtn(refs.loadMoreBtn);
+    hideNotFound(refs.notFound);
+    showLoader(refs.loader);
     try {
       currentQuery = '';
-//      hideLoadMoreBtn();
-      hideNotFound();
-      renderProducts([], (page !== 1));
+//      hideLoadMoreBtn(refs.loadMoreBtn);
+      renderProducts([], null, (page !== 1));
 /*
       if (page === 1) {
         clearProducts();
@@ -108,11 +94,11 @@ async function getProductsByCategory(category = '', page = 1) {
         clearProducts();
       }
 
-      hideLoadMoreBtn();
+//      hideLoadMoreBtn(refs.loadMoreBtn);
       showError(MESSAGES.ERROR_LOADING_PRODUCTS + '<br><br>' + error, true);
     } finally {
       isLoading = false;
-      hideLoader();
+      hideLoader(refs.loader);
     }
   }
 }
@@ -130,12 +116,13 @@ export async function getProductsByQuery(query = '', page = 1) {
     return;
   } else {
     isLoading = true;
-    showLoader();
+    hideLoadMoreBtn(refs.loadMoreBtn);
+    hideNotFound(refs.notFound);
+    showLoader(refs.loader);
     try {
-//      hideLoadMoreBtn();
-      hideNotFound();
+//      hideLoadMoreBtn(refs.loadMoreBtn);
       document.querySelector(`.${categoriesBtnClass}.${categoriesBtnIsActiveClass}`)?.classList.remove(categoriesBtnIsActiveClass);
-      renderProducts([], (page !== 1));
+      renderProducts([], null, (page !== 1));
 /*
       if (page === 1) {
         clearProducts());
@@ -157,11 +144,11 @@ export async function getProductsByQuery(query = '', page = 1) {
         clearProducts();
       }
 
-      hideLoadMoreBtn();
+//      hideLoadMoreBtn(refs.loadMoreBtn);
       showError(MESSAGES.ERROR_LOADING_PRODUCTS + '<br><br>' + error, true);
     } finally {
       isLoading = false;
-      hideLoader();
+      hideLoader(refs.loader);
     }
   }
 }
@@ -169,19 +156,19 @@ export async function getProductsByQuery(query = '', page = 1) {
 function handleProducts(products, page) {
   const items = products?.products || [];
   const totalItems = products?.total || 0;
-  const limit = products?.limit || productsPerPage;
-  const totalPages = Math.ceil(totalItems / productsPerPage);
+  const limit = products?.limit || PRODUCTS_PER_PAGE;
+  const totalPages = Math.ceil(totalItems / PRODUCTS_PER_PAGE);
 
   currentPage = page;
   if ((page === 1) && (items.length === 0)) {
-    hideLoadMoreBtn();
+//    hideLoadMoreBtn(refs.loadMoreBtn);
 //    clearProducts();
-    showNotFound();
+    showNotFound(refs.notFound);
     showInfo(MESSAGES.INFO_NO_PRODUCTS_FOUND);
     return;
   }
 
-  renderProducts(items, (page !== 1));
+  renderProducts(items, null, (page !== 1));
 
   let newProducts;
   if (page === 1) {
@@ -192,14 +179,14 @@ function handleProducts(products, page) {
     newProducts = Array.from(allProducts).slice(currentCount);
   }
 
-  if ((page >= totalPages) || (items.length < productsPerPage)) {
-    hideLoadMoreBtn();
+  if ((page >= totalPages) || (items.length < PRODUCTS_PER_PAGE)) {
+//    hideLoadMoreBtn(refs.loadMoreBtn);
 
     if (page > 1) {
       showInfo(MESSAGES.INFO_END_OF_PRODUCTS_LIST);
     }
   } else {
-    showLoadMoreBtn();
+    showLoadMoreBtn(refs.loadMoreBtn);
   }
 }
 
@@ -214,50 +201,46 @@ async function handleLoadMoreBtnClick(event) {
     showError(MESSAGES.ERROR_LOADING_PRODUCTS);
   }
 }
-
+/*
 export async function getProductsList() {
 
 }
 
-const isVisibleClass = 'is-visible';
-const isHiddenClass = 'is-hidden';
-const isLoadingClass = 'is-loading';
-const notFoundVisibleClass = 'not-found--visible';
-
 function showLoader() {
-  refs.loader?.classList.add(isVisibleClass);
-  refs.loader?.classList.add(isLoadingClass);
-//  refs.loader?.classList.remove(isHiddenClass);
+  refs.loader?.classList.add(CSS_CLASSES.CLASS_IS_VISIBLE);
+  refs.loader?.classList.add(CSS_CLASSES.CLASS_IS_LOADING);
+//  refs.loader?.classList.remove(CSS_CLASSES.CLASS_IS_HIDDEN);
 
-  refs.loadMoreBtn?.classList.add(isLoadingClass);
-  refs.loadMoreBtn?.classList.remove(isHiddenClass);
+//  refs.loadMoreBtn?.classList.add(CSS_CLASSES.CLASS_IS_LOADING);
+//  refs.loadMoreBtn?.classList.remove(CSS_CLASSES.CLASS_IS_HIDDEN);
 }
 
 function hideLoader() {
-  refs.loader?.classList.remove(isVisibleClass);
-  refs.loader?.classList.remove(isLoadingClass);
-//  refs.loader?.classList.add(isHiddenClass);
+  refs.loader?.classList.remove(CSS_CLASSES.CLASS_IS_VISIBLE);
+  refs.loader?.classList.remove(CSS_CLASSES.CLASS_IS_LOADING);
+//  refs.loader?.classList.add(CSS_CLASSES.CLASS_IS_HIDDEN);
 
-  refs.loadMoreBtn?.classList.remove(isLoadingClass);
-//  refs.loadMoreBtn?.classList.add(isHiddenClass);
+//  refs.loadMoreBtn?.classList.remove(CSS_CLASSES.CLASS_IS_LOADING);
+//  refs.loadMoreBtn?.classList.add(CSS_CLASSES.CLASS_IS_HIDDEN);
 }
 
 function showLoadMoreBtn() {
-  refs.loadMoreBtn?.classList.add(isVisibleClass);
-//  refs.loadMoreBtn?.classList.add(isLoadingClass);
-  refs.loadMoreBtn?.classList.remove(isHiddenClass);
+  refs.loadMoreBtn?.classList.add(CSS_CLASSES.CLASS_IS_VISIBLE);
+//  refs.loadMoreBtn?.classList.add(CSS_CLASSES.CLASS_IS_LOADING);
+  refs.loadMoreBtn?.classList.remove(CSS_CLASSES.CLASS_IS_HIDDEN);
 }
 
 function hideLoadMoreBtn() {
-  refs.loadMoreBtn?.classList.remove(isVisibleClass);
-  refs.loadMoreBtn?.classList.remove(isLoadingClass);
-  refs.loadMoreBtn?.classList.add(isHiddenClass);
+  refs.loadMoreBtn?.classList.remove(CSS_CLASSES.CLASS_IS_VISIBLE);
+//  refs.loadMoreBtn?.classList.remove(CSS_CLASSES.CLASS_IS_LOADING);
+  refs.loadMoreBtn?.classList.add(CSS_CLASSES.CLASS_IS_HIDDEN);
 }
 
 function showNotFound() {
-  refs.notFound?.classList.add(notFoundVisibleClass);
+  refs.notFound?.classList.add(CSS_CLASSES.CLASS_NOT_FOUND_VISIBLE);
 }
 
 function hideNotFound() {
-  refs.notFound?.classList.remove(notFoundVisibleClass);
+  refs.notFound?.classList.remove(CSS_CLASSES.CLASS_NOT_FOUND_VISIBLE);
 }
+*/

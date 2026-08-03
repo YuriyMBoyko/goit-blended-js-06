@@ -1,7 +1,7 @@
 import { fetchProductById } from './products/products-api.js';
 import { showError, showInfo } from './helpers.js';
 import { CAPTIONS, MESSAGES } from './string-consts.js';
-import { isProductInWishlist, addProductToWishlist, removeProductFromWishlist } from './wishlist-logic.js';
+import { isProductInWishlist, addProductToWishlist, removeProductFromWishlist } from './wishlist/wishlist-logic.js';
 import { isProductInCart, addProductToCart, removeProductFromCart } from './cart-logic.js';
 
 const refs = {
@@ -77,7 +77,21 @@ function showLoader(isVisible) {
   loader.setAttribute('aria-hidden', String(!isVisible));
 }
 
-export async function openProductModal(productId) {
+export function initProductModal(tag) {
+  tag?.addEventListener('click', event => {
+    const clicked = event.target.closest('.products__item');
+    if (clicked) {
+      const productId = clicked.dataset.id;
+      if (!productId) {
+        showInfo(MESSAGES.INFO_NO_PRODUCT_INFO);
+        return;
+      }
+      openProductModal(productId);
+    }
+  });
+}
+
+export function openProductModal(productId) {
   showBackdrop();
   fillProductModal(productId);
   updateWishlistCaption(isProductInWishlist(productId));

@@ -18,7 +18,7 @@ function createCategoriesMarkup(categories) {
 export function clearProducts() {
   refs.productsList.innerHTML = '';
 }
-
+/*
 export function renderProducts(products, append = false) {
   const markup = (Array.isArray(products) && (products.length === 0)) ? '' : createProductsMarkup(products);
   if (append) {
@@ -27,6 +27,23 @@ export function renderProducts(products, append = false) {
     }
   } else {
     refs.productsList.innerHTML = markup;
+  }
+}
+*/
+export function renderProducts(products, tag = null, append = false) {
+  if (!tag) {
+    tag = refs.productsList;
+  }
+
+  if (tag) {
+    const markup = (Array.isArray(products) && (products.length === 0)) ? '' : createProductsMarkup(products);
+    if (append) {
+      if (markup !== '') {
+        tag.insertAdjacentHTML('beforeend', markup);
+      }
+    } else {
+      tag.innerHTML = markup;
+    }
   }
 }
 

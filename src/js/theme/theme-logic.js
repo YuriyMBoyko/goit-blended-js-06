@@ -4,7 +4,6 @@ import { STORAGE_KEYS, THEME_ATTR_NAME, LIGHT_THEME_ATTR_VALUE, DARK_THEME_ATTR_
 
 refs.taggleButton?.addEventListener('click', () => {
   const newTheme = (isCurrentThemeDark() ? String(LIGHT_THEME_ATTR_VALUE) : String(DARK_THEME_ATTR_VALUE));
-  console.log(newTheme);
   setTheme(newTheme);
   saveTheme(newTheme);
 });
