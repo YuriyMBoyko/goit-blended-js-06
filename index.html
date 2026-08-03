@@ -5,10 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/goit-blended-js-06/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home page</title>
-    <script src="./js/theme/theme-init.js"></script>
+<!--    <script src="./js/theme/theme-init.js"></script> -->
+    <script>const STORAGE_KEYS = {
+  THEME: 'blended-js6-theme',
+}
+
+const THEME_ATTR_NAME = 'data-theme';
+const LIGHT_THEME_ATTR_VALUE = 'light';
+const DARK_THEME_ATTR_VALUE = 'dark';
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+  const userPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initialTheme = savedTheme || (userPrefersDark ? DARK_THEME_ATTR_VALUE : LIGHT_THEME_ATTR_VALUE);
+  document.documentElement.setAttribute(THEME_ATTR_NAME, initialTheme);
+}
+
+initTheme();
+</script>
     <script type="module" crossorigin src="/goit-blended-js-06/index.js"></script>
     <link rel="modulepreload" crossorigin href="/goit-blended-js-06/assets/vendor-4yCzdkXl.js">
-    <link rel="modulepreload" crossorigin href="/goit-blended-js-06/assets/handlers-BsOk5BpH.js">
+    <link rel="modulepreload" crossorigin href="/goit-blended-js-06/assets/handlers-Nax2d--s.js">
     <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/vendor-DnveWo0P.css">
     <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/handlers-CUDk91BK.css">
   </head>
