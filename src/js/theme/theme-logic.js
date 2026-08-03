@@ -1,6 +1,6 @@
 import refs from './theme-refs.js';
-import theme_init from './theme-init.js?raw';
-//import { STORAGE_KEYS, THEME_ATTR_NAME, LIGHT_THEME_ATTR_VALUE, DARK_THEME_ATTR_VALUE } from './theme-consts.js';
+//import theme_init from './theme-init.js?raw';
+import { STORAGE_KEYS, THEME_ATTR_NAME, LIGHT_THEME_ATTR_VALUE, DARK_THEME_ATTR_VALUE } from './theme-consts.js';
 
 refs.taggleButton?.addEventListener('click', () => {
   const newTheme = (isCurrentThemeDark() ? String(LIGHT_THEME_ATTR_VALUE) : String(DARK_THEME_ATTR_VALUE));
