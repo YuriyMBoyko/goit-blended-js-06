@@ -4,8 +4,7 @@ import { renderProducts } from '../products/products-render.js';
 import { loadWishlistItemsFromStorage, saveWishlistItemsToStorage } from '../storage.js';
 import { fetchProductById, PRODUCTS_PER_PAGE } from '../products/products-api.js';
 import { initProductModal } from '../modal.js';
-import { CSS_CLASSES } from '../constants.js';
-import { MESSAGES } from '../string-consts.js';
+import { CSS_CLASSES, MESSAGES } from '../constants.js';
 import { showLoader, hideLoader, showLoadMoreBtn, hideLoadMoreBtn, showNotFound, hideNotFound, showError, showInfo, sleep } from '../helpers.js';
 
 let wishlistItemsCount = 0;

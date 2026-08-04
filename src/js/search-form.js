@@ -1,7 +1,7 @@
 import refs from './refs.js';
 import { getProductsByQuery } from './products/products-logic.js';
 import { showInfo, showError } from './helpers.js';
-import { MESSAGES } from './string-consts.js';
+import { MESSAGES } from './constants.js';
 
 refs.searchForm?.addEventListener('submit', searchFormOnSubmit);
 refs.clearSearchBtn?.addEventListener('click', clearSearchBtnOnClick);

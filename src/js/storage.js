@@ -1,5 +1,5 @@
 import { showError } from './helpers.js';
-//import { MESSAGES } from './string-consts.js';
+//import { MESSAGES } from './constants.js';
 
 const STORAGE_KEYS = {
   CART: 'blended-js6-cart',
@@ -39,7 +39,8 @@ export function saveWishlistItemsToStorage(wishlistItems) {
 }
 
 export function loadCartItemsFromStorage() {
-  return loadFromLocalStorage(STORAGE_KEYS.CART);
+  const items = loadFromLocalStorage(STORAGE_KEYS.CART);
+  return (items && Array.isArray(items)) ? items : [];
 }
 
 export function saveCartItemsToStorage(cartItems) {

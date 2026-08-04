@@ -3,9 +3,7 @@ import { allCategoryName } from './products-consts.js';
 import { fetchCategories, fetchProductsByCategory, fetchProductsByQuery, PRODUCTS_PER_PAGE } from './products-api.js';
 import { clearProducts, renderCategories, renderProducts } from './products-render.js';
 import { showLoader, hideLoader, showLoadMoreBtn, hideLoadMoreBtn, showNotFound, hideNotFound, showError, showInfo, sleep } from '../helpers.js';
-import { CSS_CLASSES } from '../constants.js';
-import { MESSAGES } from '../string-consts.js';
-//import { ERROR_LOADING_CATEGOREIS, ERROR_LOADING_PRODUCTS, ERROR_CHANGING_CATEGORY, INFO_NO_PRODUCTS_FOUND, INFO_END_OF_PRODUCTS_LIST, INFO_NO_PRODUCT_INFO } from '../string-consts.js';
+import { CSS_CLASSES, MESSAGES } from '../constants.js';
 import { initProductModal } from '../modal.js';
 
 let currentCategory = '';

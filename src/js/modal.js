@@ -1,8 +1,8 @@
 import { fetchProductById } from './products/products-api.js';
 import { showError, showInfo } from './helpers.js';
-import { CAPTIONS, MESSAGES } from './string-consts.js';
+import { CAPTIONS, MESSAGES } from './constants.js';
 import { isProductInWishlist, addProductToWishlist, removeProductFromWishlist } from './wishlist/wishlist-logic.js';
-import { isProductInCart, addProductToCart, removeProductFromCart } from './cart-logic.js';
+import { isProductInCart, addProductToCart, removeProductFromCart } from './cart/cart-logic.js';
 
 const refs = {
   modalDiv: document.querySelector('div.modal'),

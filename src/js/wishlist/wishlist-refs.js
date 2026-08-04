@@ -1,7 +1,6 @@
 export default {
   spanNavWishlist: document.querySelector('span[data-wishlist-count]'),
 
-//  divWishlistContainer: document.querySelector('.container.wishlist-container'),
   divWishlistProducts: document.querySelector('.container.wishlist-container .products'),
   spanWishlistLoader: document.querySelector('.container.wishlist-container .loader'),
   btnWishlistShowMore: document.querySelector('.container.wishlist-container .load-more-btn'),

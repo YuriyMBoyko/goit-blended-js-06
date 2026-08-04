@@ -1,5 +1,5 @@
 import refs from './wishlist-refs.js';
-import { CSS_CLASSES } from '../constants.js';
+//import { CSS_CLASSES } from '../constants.js';
 
 export function renderEmptyWishlist() {
   if (refs.divWishlistProducts) {
