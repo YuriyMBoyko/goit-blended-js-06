@@ -21,7 +21,7 @@ refs.btnCartBuy?.addEventListener('click', (event) => {
   clearCart();
 
   setTimeout(() => {
-    window.location.href = './index.html';
+    window.location.href = './';
   }, 3000);
 });
 
