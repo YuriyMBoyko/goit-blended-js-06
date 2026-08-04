@@ -12,9 +12,9 @@
   document.documentElement.setAttribute('data-theme', initialTheme);
 })();</script>
     <script type="module" crossorigin src="/goit-blended-js-06/assets/vendor-4yCzdkXl.js"></script>
-    <script type="module" crossorigin src="/goit-blended-js-06/assets/handlers-BstTvLzd.js"></script>
+    <script type="module" crossorigin src="/goit-blended-js-06/assets/handlers-BAf1TwUU.js"></script>
+    <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/handlers-BqyD_vQR.css">
     <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/vendor-DnveWo0P.css">
-    <link rel="stylesheet" crossorigin href="/goit-blended-js-06/assets/handlers-D1GiaRW_.css">
   </head>
   <body>
     <header class="header sticky-header">
@@ -63,14 +63,24 @@
         </li>
       </ul>
     </nav>
-    <button class="theme-toggle-btn" aria-label="Toggle theme"></button>
+    <button class="theme-toggle-btn" aria-label="Toggle theme">
+      <svg class="theme-icon theme-icon-sun" width="32" height="32">
+        <use href="/goit-blended-js-06/assets/theme-CM4zGnE9.svg#icon-sun"></use>
+      </svg>
+      <svg class="theme-icon theme-icon-moon" width="32" height="32">
+        <use href="/goit-blended-js-06/assets/theme-CM4zGnE9.svg#icon-moon"></use>
+      </svg>
+<!--      <span class="theme-icon"></span> -->
+    </button>
   </div>
 </header>
 
     <section class="section">
-      <div class="container product-page">
+      <div class="container product-page cart-container">
         <main>
           <ul class="products"></ul>
+          <span class="loader"></span>
+          <button class="load-more-btn is-hidden">Load More</button>
           <div class="not-found">
             <div class="not-found__icon">
               <svg
